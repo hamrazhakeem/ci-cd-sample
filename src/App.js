@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './Pages/Login';
+import SignUp from './Pages/SignUp';
+import Home from './Pages/Home';
+import PrivateRoute from './Components/PrivateRoute';
+import { useAuth } from './useAuth';
 
 function App() {
+  const isAuthenticated = useAuth();
+
+  // Wait for the authentication check to complete
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>; // Or any loading indicator you prefer
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route
+            path="/"
+            element={isAuthenticated ? <Navigate to="/home" /> : <Login />}
+          />
+          <Route
+            path="/signup"
+            element={isAuthenticated ? <Navigate to="/home" /> : <SignUp />}
+          />
+          <Route
+            path="/home"
+            element={<PrivateRoute element={Home} />}
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
